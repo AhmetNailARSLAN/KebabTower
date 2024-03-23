@@ -34,12 +34,11 @@ public class GameManager : MonoBehaviour
         money += amount * foodCost;
     }
 
-    public void BuyUpgrade(Upgrade upgrade)
+    public void BuyUpgrade(float cost)
     {
-        if (money >= upgrade.cost)
+        if (money >= cost)
         {
-            money -= upgrade.cost;
-            upgrade.ApplyUpgrade();
+            money -= cost;
         }
     }
 }

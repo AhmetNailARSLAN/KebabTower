@@ -1,41 +1,31 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Courier : MonoBehaviour
+public class Courier : Worker
 {
     public Cashier cashier;
-
-    public float foodAmount;
-    public float moveSpeed;
-    public float carryCapacity;
 
     private Transform cashierTransform;
     private Transform startPosition;
     private bool isCarryingFood;
+    Transform targetPos;
 
     private void Start()
     {
         cashierTransform = cashier.transform;
         startPosition = cashierTransform;
+        targetPos.position = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, 0f, 0f));
 
         // Kurye baþlangýç pozisyonuna ýþýnlanýr.
         TeleportStartPos();
+        MoveToDeliver();
+
     }
 
     private void Update()
     {
-        if (!isCarryingFood)
-        {
-            if (cashier.HasFood())
-            {
-                StartCoroutine(TakeFood());
-            }
-        }
-        else
-        {
-            MoveToDeliver();
-        }
     }
 
     void TeleportStartPos()
@@ -43,33 +33,41 @@ public class Courier : MonoBehaviour
         transform.position = startPosition.position;
     }
 
-    private IEnumerator TakeFood()
-    {
-        // Kurye yiyecek alma süresini bekler.
-        yield return new WaitForSeconds(1f);
-
-        // Kurye kasadan yiyecek alýr.
-        float takenFoodAmount = Mathf.Min(carryCapacity, cashier.foodAmount);
-        foodAmount += takenFoodAmount;
-        cashier.foodAmount -= takenFoodAmount;
-
-        // Kurye yiyecek taþýmaya baþlar.
-        isCarryingFood = true;
-    }
-
     void MoveToDeliver()
     {
-        // Kurye ekranýn saðýna doðru hareket eder.
-        transform.position += new Vector3(moveSpeed * Time.deltaTime, 0f, 0f);
+        StartCoroutine(MoveToDestination(targetPos, () => DeliverFood()));
+    }
 
-        if (transform.position.x > Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, 0f, 0f)).x)
+    public override void TakeFood()
+    {
+        var foodToTake = Mathf.Min(carryCapacity, cashier.foodAmount);
+        foodAmount += foodToTake;
+        cashier.foodAmount -= foodToTake;
+        isCarryingFood = true;
+        MoveToDeliver();
+    }
+
+    public override void DeliverFood()
+    {
+        GameManager.instance.SellFood(foodAmount);
+        TeleportStartPos();
+    }
+
+    public override IEnumerator MoveToDestination(Transform destination, Action onReachDestination)
+    {
+        // Hedefe ulaþana kadar hareket et.
+        while (Vector3.Distance(transform.position, destination.position) > 0.1f)
         {
-            // Kurye elindeki yiyeceði satar
-            GameManager.instance.SellFood(foodAmount);
-
-            // Baþlangýç pozisyonuna ýþýnlanýr.
-            isCarryingFood = false;
-            TeleportStartPos();
+            transform.position = Vector3.MoveTowards(transform.position, destination.position, moveSpeed * Time.deltaTime);
+            yield return new WaitForSeconds(0.4f);
+            yield return null;
         }
+
+        // Hedefe ulaþýnca belirtilen süre kadar bekle.
+        yield return new WaitForSeconds(waitTime);
+
+        // Hedefe ulaþtý, callback'i çaðýr.
+        Debug.Log("Reached destination, invoking callback.");
+        onReachDestination?.Invoke();
     }
 }

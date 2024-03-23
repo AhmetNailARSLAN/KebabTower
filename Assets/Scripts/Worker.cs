@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,8 +13,8 @@ public abstract class Worker : MonoBehaviour, IInteractable
     public int upgradeLevel = 1; // Yükseltme seviyesi.
     public int upgradeCost = 100; // Yükseltme maliyeti.
 
-    public abstract void TakeFood(float amount);
-    public abstract void DeliverFood(float amount);
+    public abstract void TakeFood();
+    public abstract void DeliverFood();
 
     public virtual void Upgrade()
     {
@@ -22,4 +23,6 @@ public abstract class Worker : MonoBehaviour, IInteractable
         upgradeLevel++;
         upgradeCost *= 2;
     }
+
+    public abstract IEnumerator MoveToDestination(Transform destination, Action onReachDestination);
 }

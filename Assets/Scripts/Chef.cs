@@ -17,7 +17,6 @@ public class Chef : MonoBehaviour
     {
         while (true)
         {
-            Debug.Log("Çalýþtý");
             yield return new WaitForSeconds(cookingSpeed);
             targetFood.ServeFood(makeAmount);
         }

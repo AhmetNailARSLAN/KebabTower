@@ -274,7 +274,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &90586253
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -287,10 +287,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80994984d8b9d864496b6547cc939f75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cashier: {fileID: 1250901130}
+  carryCapacity: 20
   foodAmount: 0
   moveSpeed: 4
-  carryCapacity: 20
+  waitTime: 0.4
+  upgradeLevel: 1
+  upgradeCost: 100
+  cashier: {fileID: 1250901130}
 --- !u!212 &90586254
 SpriteRenderer:
   m_ObjectHideFlags: 0

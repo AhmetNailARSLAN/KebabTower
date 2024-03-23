@@ -9,10 +9,28 @@ public class Upgrade
     public float cost = 100; // Yükseltme maliyeti.
     public float costMultiplier = 1.15f; // Maliyet artýþ oraný.
 
+    GameObject UpgradePanelPrefab;
+
     public void ApplyUpgrade()
     {
         // Yükseltme seviyesini artýr ve maliyeti oranda artýr.
         level++;
         cost *= costMultiplier;
     }
+
+    public void BuyUpgrade() 
+    {
+        GameManager.instance.BuyUpgrade(cost);
+    }
+
+    public void OpenUpgradePanel()
+    {
+        UpgradePanelPrefab.SetActive(true);
+        
+    }
+    public void PlaceData()
+    {
+        // Panele verileri yerleþtirir
+    }
+
 }

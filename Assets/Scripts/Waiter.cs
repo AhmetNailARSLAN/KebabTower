@@ -6,7 +6,7 @@ using UnityEngine;
 public class Waiter : Worker
 {
     public Table food;
-    public Storage cashier;
+    public Storage storage;
 
     public Transform tablePos;
     public Transform cashierPos;
@@ -18,7 +18,7 @@ public class Waiter : Worker
         MoveTable();
     }
 
-    public override void TakeFood(float amount)
+    public override void TakeFood()
     {
         var foodToTake = Mathf.Min(carryCapacity, food.foodAmount);
         foodAmount += foodToTake;
@@ -27,34 +27,31 @@ public class Waiter : Worker
         MoveStorage();
     }
 
-    public override void DeliverFood(float amount)
+    public override void DeliverFood()
     {
-        var foodToDeliver = Mathf.Min(foodAmount, cashier.foodAmount);
-        cashier.foodAmount += foodToDeliver;
-        foodAmount -= foodToDeliver;
-        isCarryingFood = false;
+        storage.foodAmount += foodAmount;
+        foodAmount = 0;
         MoveTable();
     }
 
     void MoveTable()
     {
         // Yemeði almaya git.
-        StartCoroutine(MoveToDestination(tablePos, () => TakeFood(carryCapacity)));
+        StartCoroutine(MoveToDestination(tablePos, () => TakeFood()));
     }
 
     void MoveStorage()
     {
         //yemeði teslim etmeye götür
-        StartCoroutine(MoveToDestination(cashierPos, () => DeliverFood(foodAmount)));
+        StartCoroutine(MoveToDestination(cashierPos, () => DeliverFood()));
     }
 
-    IEnumerator MoveToDestination(Transform destination, Action onReachDestination)
+    public override IEnumerator MoveToDestination(Transform destination, Action onReachDestination)
     {
         // Hedefe ulaþana kadar hareket et.
         while (Vector3.Distance(transform.position, destination.position) > 0.1f)
         {
             transform.position = Vector3.MoveTowards(transform.position, destination.position, moveSpeed * Time.deltaTime);
-            yield return new WaitForSeconds(0.4f);
             yield return null;
         }
 

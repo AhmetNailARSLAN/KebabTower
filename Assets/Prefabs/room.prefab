@@ -262,13 +262,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59861d505f1ca79468376d9f4816959e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  food: {fileID: 8217091873100710089}
-  cashier: {fileID: 3728780111469711164}
-  tablePos: {fileID: 6781351715936654858}
-  cashierPos: {fileID: 5763476751557953703}
   carryCapacity: 10
   foodAmount: 0
   moveSpeed: 0.9
+  waitTime: 0.8
+  upgradeLevel: 1
+  upgradeCost: 100
+  food: {fileID: 8217091873100710089}
+  storage: {fileID: 3728780111469711164}
+  tablePos: {fileID: 6781351715936654858}
+  cashierPos: {fileID: 5763476751557953703}
 --- !u!1 &1167068291986039265
 GameObject:
   m_ObjectHideFlags: 0
