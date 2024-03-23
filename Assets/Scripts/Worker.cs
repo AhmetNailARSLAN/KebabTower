@@ -23,6 +23,20 @@ public abstract class Worker : MonoBehaviour, IInteractable
         upgradeLevel++;
         upgradeCost *= 2;
     }
+    public virtual IEnumerator MoveToDestination(Vector3 destination, Action onReachDestination)
+    {
+        // Hedefe ulaþana kadar hareket et.
+        while (Vector3.Distance(transform.position, destination) > 0.1f)
+        {
+            transform.position = Vector3.MoveTowards(transform.position, destination, moveSpeed * Time.deltaTime);
+            yield return null;
+        }
 
-    public abstract IEnumerator MoveToDestination(Transform destination, Action onReachDestination);
+        // Hedefe ulaþýnca belirtilen süre kadar bekle.
+        yield return new WaitForSeconds(waitTime);
+
+        // Hedefe ulaþtý, callback'i çaðýr.
+        Debug.Log("Reached destination, invoking callback.");
+        onReachDestination?.Invoke();
+    }
 }

@@ -1,18 +1,15 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UIElements;
 
-public class Elevator : MonoBehaviour
+public class Elevator : Worker
 {
     public Cashier cashier;
 
     public TextMeshProUGUI foodText;
-
-    public float carryCapacity;
-    public float moveSpeed;
-    public float waitTime;
-    public float foodAmount;
 
     public int currentFloor;
 
@@ -22,11 +19,14 @@ public class Elevator : MonoBehaviour
     public bool isWaiting;
     public bool isFull;
 
+    float freeSpace;
+
 
     private void Start()
     {
         storageList = new List<Storage>();
         currentFloor = 0;
+        freeSpace = carryCapacity;
 
         // Her katmandaki kasiyerleri bulun.
         foreach (GameObject cashierObj in GameObject.FindGameObjectsWithTag("Storage"))
@@ -34,98 +34,55 @@ public class Elevator : MonoBehaviour
             storageList.Add(cashierObj.GetComponent<Storage>());
         }
         storageList.Reverse();
+
+        MoveStorage();
     }
 
     private void Update()
     {
-        if (!isCollectingFood && !isWaiting && !isFull)
-        {
-            // Yiyecek ara.
-            if (FindFood())
-            {
-                isCollectingFood = true;
-            }
-        }
-        else if (isCollectingFood && !isWaiting)
-        {
-            MoveStorage();
-        }
-        else if (!isCollectingFood && !isWaiting && isFull)
-        {
-            MoveCashier();
-        }
-
         foodText.text = foodAmount.ToString();
     }
 
-    private bool FindFood()
+    public override void TakeFood()
     {
-        // Kasiyerlerin yiyecek ihtiyacýný kontrol edin.
-        if (storageList[currentFloor].HasFood())
+        Storage storage = storageList[currentFloor];
+        float foodToTake = Mathf.Min(freeSpace, storage.foodAmount);
+        freeSpace -= foodToTake;
+        foodAmount += foodToTake;
+        storage.foodAmount -= foodToTake;
+
+        if (freeSpace == 0 || currentFloor >= storageList.Count -1)
         {
-            return true;
+            currentFloor = 0;
+            MoveCashier();
         }
-        return false;
+        else
+        {
+            currentFloor++;
+            MoveStorage();
+        }
     }
 
-    private void CollectFood()
+    public override void DeliverFood()
     {
-        // Kasiyerden yiyecek al.
-        float collectedFood = storageList[currentFloor].TakeFood(carryCapacity);
-        foodAmount += collectedFood;
-
-        if (carryCapacity == foodAmount)
-        {
-            // Asansör doluysa, satýþ departmanýna git.
-            isCollectingFood = false;
-            isFull = true;
-        }
+        freeSpace = carryCapacity;
+        cashier.ReceiveFood(foodAmount);
+        foodAmount = 0;
+        MoveStorage();
     }
     void MoveStorage()
     {
-        // Yemeði taþý.
-        transform.position = Vector3.MoveTowards(transform.position, new Vector3(transform.position.x, storageList[currentFloor].transform.position.y, transform.position.z), moveSpeed * Time.deltaTime);
-
-        if (Mathf.Abs(transform.position.y - storageList[currentFloor].transform.position.y) < 0.1f)
-        {
-            // Yemeði al.
-            CollectFood();
-            isWaiting = true;
-            StartCoroutine(WaitAndGoToNextFloor());
-        }
+        Debug.Log(currentFloor);
+        StartCoroutine(MoveToDestination(TargetPos(storageList[currentFloor].transform.position), () => TakeFood()));
     }
     private void MoveCashier()
     {
-        // Yemeði taþý.
-        transform.position = Vector3.MoveTowards(transform.position, 
-            new Vector3(transform.position.x, cashier.transform.position.y, transform.position.z), moveSpeed * Time.deltaTime);
-
-        if (Mathf.Abs(transform.position.y - cashier.transform.position.y) < 0.1f)
-        {
-            // Yiyecekleri teslim et.
-            cashier.ReceiveFood(foodAmount);
-
-            // Asansörü boþalt.
-            foodAmount = 0;
-
-            // Tekrar yiyecek aramaya baþla.
-            isCollectingFood = true;
-            isWaiting = false;
-        }
+        StartCoroutine(MoveToDestination(TargetPos(cashier.transform.position), () => DeliverFood()));
     }
 
-    IEnumerator WaitAndGoToNextFloor()
+    Vector3 TargetPos(Vector3 _position)
     {
-        yield return new WaitForSeconds(waitTime);
-        isWaiting = false;
-
-        currentFloor++;
-        if (currentFloor >= storageList.Count)
-        {
-            currentFloor = 0;
-            isCollectingFood = false;
-            isFull= true;
-        }
-
+        _position = new Vector3(transform.position.x, _position.y, transform.position.z);
+        return _position;
     }
 }

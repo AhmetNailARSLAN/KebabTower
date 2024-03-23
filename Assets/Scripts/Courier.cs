@@ -9,23 +9,36 @@ public class Courier : Worker
 
     private Transform cashierTransform;
     private Transform startPosition;
+    public Vector3 deliverPosition;
     private bool isCarryingFood;
-    Transform targetPos;
 
     private void Start()
     {
+        // deopa elemanlarýnýn pozisonu
         cashierTransform = cashier.transform;
-        startPosition = cashierTransform;
-        targetPos.position = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, 0f, 0f));
 
-        // Kurye baþlangýç pozisyonuna ýþýnlanýr.
+        // kuryenin baþlangýç pozisyonnu
+        startPosition = cashierTransform;
+
         TeleportStartPos();
-        MoveToDeliver();
+
+        // teslim edeceði yerin pozisyonu
+        Vector3 screenRight = new Vector3(Screen.width, 0, 0);
+        Vector3 worldPos = new Vector3(Camera.main.ScreenToWorldPoint(screenRight).x + 2,transform.position.y, transform.position.z);
+        deliverPosition = worldPos;
 
     }
-
     private void Update()
     {
+        if (foodAmount == 0 && cashier.foodAmount > 0)
+        {
+            TakeFood();
+        }
+        else if (foodAmount > 0 && !isCarryingFood)
+        {
+            MoveToDeliver();
+            isCarryingFood=true;
+        }
     }
 
     void TeleportStartPos()
@@ -35,39 +48,20 @@ public class Courier : Worker
 
     void MoveToDeliver()
     {
-        StartCoroutine(MoveToDestination(targetPos, () => DeliverFood()));
+        StartCoroutine(MoveToDestination(deliverPosition, () => DeliverFood()));
     }
-
     public override void TakeFood()
     {
-        var foodToTake = Mathf.Min(carryCapacity, cashier.foodAmount);
+        float foodToTake = Mathf.Min(carryCapacity, cashier.foodAmount);
         foodAmount += foodToTake;
         cashier.foodAmount -= foodToTake;
-        isCarryingFood = true;
-        MoveToDeliver();
     }
 
     public override void DeliverFood()
     {
         GameManager.instance.SellFood(foodAmount);
+        foodAmount=0;
         TeleportStartPos();
-    }
-
-    public override IEnumerator MoveToDestination(Transform destination, Action onReachDestination)
-    {
-        // Hedefe ulaþana kadar hareket et.
-        while (Vector3.Distance(transform.position, destination.position) > 0.1f)
-        {
-            transform.position = Vector3.MoveTowards(transform.position, destination.position, moveSpeed * Time.deltaTime);
-            yield return new WaitForSeconds(0.4f);
-            yield return null;
-        }
-
-        // Hedefe ulaþýnca belirtilen süre kadar bekle.
-        yield return new WaitForSeconds(waitTime);
-
-        // Hedefe ulaþtý, callback'i çaðýr.
-        Debug.Log("Reached destination, invoking callback.");
-        onReachDestination?.Invoke();
+        isCarryingFood = false;
     }
 }

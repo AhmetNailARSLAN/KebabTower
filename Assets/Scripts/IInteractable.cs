@@ -8,5 +8,4 @@ public interface IInteractable
     void TakeFood();
     void DeliverFood();
 
-    IEnumerator MoveToDestination(Transform destination, Action onReachDestination);
 }

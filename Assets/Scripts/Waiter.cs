@@ -11,8 +11,6 @@ public class Waiter : Worker
     public Transform tablePos;
     public Transform cashierPos;
 
-    private bool isCarryingFood = false;
-
     private void Start()
     {
         MoveTable();
@@ -23,7 +21,7 @@ public class Waiter : Worker
         var foodToTake = Mathf.Min(carryCapacity, food.foodAmount);
         foodAmount += foodToTake;
         food.foodAmount -= foodToTake;
-        isCarryingFood = true;
+        FlipWaiter();
         MoveStorage();
     }
 
@@ -31,37 +29,20 @@ public class Waiter : Worker
     {
         storage.foodAmount += foodAmount;
         foodAmount = 0;
+        FlipWaiter();
         MoveTable();
     }
 
     void MoveTable()
     {
         // Yemeði almaya git.
-        StartCoroutine(MoveToDestination(tablePos, () => TakeFood()));
+        StartCoroutine(MoveToDestination(tablePos.position, () => TakeFood()));
     }
 
     void MoveStorage()
     {
         //yemeði teslim etmeye götür
-        StartCoroutine(MoveToDestination(cashierPos, () => DeliverFood()));
-    }
-
-    public override IEnumerator MoveToDestination(Transform destination, Action onReachDestination)
-    {
-        // Hedefe ulaþana kadar hareket et.
-        while (Vector3.Distance(transform.position, destination.position) > 0.1f)
-        {
-            transform.position = Vector3.MoveTowards(transform.position, destination.position, moveSpeed * Time.deltaTime);
-            yield return null;
-        }
-
-        // Hedefe ulaþýnca belirtilen süre kadar bekle.
-        yield return new WaitForSeconds(waitTime);
-
-        // Hedefe ulaþtý, callback'i çaðýr.
-        FlipWaiter();
-        Debug.Log("Reached destination, invoking callback.");
-        onReachDestination?.Invoke();
+        StartCoroutine(MoveToDestination(cashierPos.position, () => DeliverFood()));
     }
 
     void FlipWaiter()

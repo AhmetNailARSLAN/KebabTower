@@ -10,10 +10,6 @@ public class Cashier : MonoBehaviour
     {
         foodAmount = 0;
     }
-    public bool HasFood()
-    {
-        return foodAmount > 0;
-    }
     private void Update()
     {
         foodText.text = foodAmount.ToString();
