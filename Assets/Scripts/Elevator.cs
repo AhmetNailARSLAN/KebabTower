@@ -28,12 +28,11 @@ public class Elevator : Worker
         currentFloor = 0;
         freeSpace = carryCapacity;
 
-        // Her katmandaki kasiyerleri bulun.
-        foreach (GameObject cashierObj in GameObject.FindGameObjectsWithTag("Storage"))
+        foreach (var floor in GameManager.instance.floors)
         {
-            storageList.Add(cashierObj.GetComponent<Storage>());
+            Storage storage = floor.GetComponentInChildren<Storage>();
+            storageList.Add(storage);
         }
-        storageList.Reverse();
 
         MoveStorage();
     }
@@ -70,14 +69,22 @@ public class Elevator : Worker
         foodAmount = 0;
         MoveStorage();
     }
+
     void MoveStorage()
     {
         Debug.Log(currentFloor);
         StartCoroutine(MoveToDestination(TargetPos(storageList[currentFloor].transform.position), () => TakeFood()));
     }
+
     private void MoveCashier()
     {
         StartCoroutine(MoveToDestination(TargetPos(cashier.transform.position), () => DeliverFood()));
+    }
+
+    public void NewStorage(GameObject floor)
+    {
+        Storage storage = floor.GetComponentInChildren<Storage>();
+        storageList.Add(storage);
     }
 
     Vector3 TargetPos(Vector3 _position)
