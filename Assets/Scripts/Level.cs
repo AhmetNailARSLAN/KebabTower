@@ -1,23 +1,32 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.Analytics;
 
 public class Level : MonoBehaviour
 {
     public Chef chef;
     public Waiter waiter;
     public Storage storage;
-    public Table table;
 
     public bool isLocked;
 
-    GameObject openFloor;
-    GameObject lockedFloor;
+    public GameObject openFloor;
+    public GameObject lockedFloor;
+    public GameObject UnlockButton;
+
+    public float UnlockCost = 1f;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        UnlockButton.GetComponentInChildren<TextMeshProUGUI>().text = UnlockCost.ToString();
+    }
+
+    public void Unlock()
+    {
+        GameManager.instance.UnlockLevel();
     }
 
     // Update is called once per frame

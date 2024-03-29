@@ -30,6 +30,7 @@ public class UIManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        moneytext.text = GameManager.instance.Money.ToString();
+        moneytext.text = MoneyManager.instance.CurrentMoney.ToString();
     }
+
 }

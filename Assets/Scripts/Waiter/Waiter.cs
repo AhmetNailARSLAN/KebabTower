@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Waiter : Worker
 {
-    public Table food;
+    public Chef chef;
     public Storage storage;
 
     public Transform tablePos;
@@ -13,14 +13,14 @@ public class Waiter : Worker
 
     private void Start()
     {
-        MoveTable();
+        MoveChef();
     }
 
     public override void TakeFood()
     {
-        var foodToTake = Mathf.Min(carryCapacity, food.foodAmount);
+        var foodToTake = Mathf.Min(carryCapacity, chef.foodAmount);
         foodAmount += foodToTake;
-        food.foodAmount -= foodToTake;
+        chef.foodAmount -= foodToTake;
         FlipWaiter();
         MoveStorage();
     }
@@ -30,10 +30,10 @@ public class Waiter : Worker
         storage.foodAmount += foodAmount;
         foodAmount = 0;
         FlipWaiter();
-        MoveTable();
+        MoveChef();
     }
 
-    void MoveTable()
+    void MoveChef()
     {
         // Yemeði almaya git.
         StartCoroutine(MoveToDestination(tablePos.position, () => TakeFood()));

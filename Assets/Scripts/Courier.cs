@@ -59,7 +59,7 @@ public class Courier : Worker
 
     public override void DeliverFood()
     {
-        GameManager.instance.SellFood(foodAmount);
+        MoneyManager.instance.SellFood(foodAmount);
         foodAmount=0;
         TeleportStartPos();
         isCarryingFood = false;

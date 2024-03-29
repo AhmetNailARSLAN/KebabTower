@@ -1,12 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class Chef : MonoBehaviour
 {
-    public Table targetFood;
     public float cookingSpeed;
     public float makeAmount;
+    public float foodAmount;
 
     private void Start()
     {
@@ -18,7 +19,12 @@ public class Chef : MonoBehaviour
         while (true)
         {
             yield return new WaitForSeconds(cookingSpeed);
-            targetFood.ServeFood(makeAmount);
+            ServeFood();
         }
+    }
+
+    public void ServeFood()
+    {
+        foodAmount += makeAmount;
     }
 }

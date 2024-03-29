@@ -12,6 +12,7 @@ public class Elevator : Worker
     public TextMeshProUGUI foodText;
 
     public int currentFloor;
+    float freeSpace;
 
     public List<Storage> storageList;
 
@@ -19,8 +20,7 @@ public class Elevator : Worker
     public bool isWaiting;
     public bool isFull;
 
-    float freeSpace;
-
+    public GameObject firstFloor;
 
     private void Start()
     {
@@ -28,11 +28,8 @@ public class Elevator : Worker
         currentFloor = 0;
         freeSpace = carryCapacity;
 
-        foreach (var floor in GameManager.instance.floors)
-        {
-            Storage storage = floor.GetComponentInChildren<Storage>();
-            storageList.Add(storage);
-        }
+        Storage storage = firstFloor.GetComponentInChildren<Storage>();
+        storageList.Add(storage);
 
         MoveStorage();
     }

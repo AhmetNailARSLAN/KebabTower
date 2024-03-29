@@ -46,6 +46,12 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Workers
+    uniqueID: 821045435
+    locked: 0
+  - name: Tables
+    uniqueID: 2873055895
+    locked: 0
   - name: UI
     uniqueID: 731245393
     locked: 0

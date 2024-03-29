@@ -535,9 +535,25 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 385774575767285883, guid: 0fd16e0cd5efe3b40a3cd7ce80505251, type: 3}
+      propertyPath: isLocked
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 385774575767285883, guid: 0fd16e0cd5efe3b40a3cd7ce80505251, type: 3}
+      propertyPath: UnlockCost
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3141804241239372922, guid: 0fd16e0cd5efe3b40a3cd7ce80505251, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4869733542303961435, guid: 0fd16e0cd5efe3b40a3cd7ce80505251, type: 3}
       propertyPath: m_Name
       value: room
+      objectReference: {fileID: 0}
+    - target: {fileID: 8484871940485682716, guid: 0fd16e0cd5efe3b40a3cd7ce80505251, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8710541812257111471, guid: 0fd16e0cd5efe3b40a3cd7ce80505251, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1087,7 +1103,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1654518168}
         m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
-        m_MethodName: AddNewLevel
+        m_MethodName: UnlockLevel
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1535,6 +1551,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1654518169}
   - component: {fileID: 1654518168}
+  - component: {fileID: 1654518170}
   m_Layer: 0
   m_Name: Game Manager
   m_TagString: Untagged
@@ -1557,9 +1574,12 @@ MonoBehaviour:
   elevator: {fileID: 1319352958}
   floors:
   - {fileID: 1390668550}
+  - {fileID: 1989541993}
   levelPrefab: {fileID: 4869733542303961435, guid: 0fd16e0cd5efe3b40a3cd7ce80505251, type: 3}
-  foodCost: 2
-  powerMultiplier: 1.2
+  powerMultiplier: 4
+  chefmakeAmountMultiplier: 6
+  movementMultiplier: 1.2
+  levelCostMultiplier: 1.8
   levelHeight: 4
 --- !u!4 &1654518169
 Transform:
@@ -1576,6 +1596,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1654518170
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1654518167}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7fad9a35f1595044a9b1c7be2c0d50b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  testMoney: 200
+  foodPrice: 10
 --- !u!1 &1747417652
 GameObject:
   m_ObjectHideFlags: 0
@@ -1722,13 +1756,29 @@ PrefabInstance:
       propertyPath: m_FlipX
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 385774575767285883, guid: 0fd16e0cd5efe3b40a3cd7ce80505251, type: 3}
+      propertyPath: isLocked
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3089535436896972785, guid: 0fd16e0cd5efe3b40a3cd7ce80505251, type: 3}
       propertyPath: moveSpeed
       value: 1.27
       objectReference: {fileID: 0}
+    - target: {fileID: 3141804241239372922, guid: 0fd16e0cd5efe3b40a3cd7ce80505251, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4869733542303961435, guid: 0fd16e0cd5efe3b40a3cd7ce80505251, type: 3}
       propertyPath: m_Name
       value: room (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 8484871940485682716, guid: 0fd16e0cd5efe3b40a3cd7ce80505251, type: 3}
+      propertyPath: m_Name
+      value: LockedFloor
+      objectReference: {fileID: 0}
+    - target: {fileID: 8484871940485682716, guid: 0fd16e0cd5efe3b40a3cd7ce80505251, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8710541812257111471, guid: 0fd16e0cd5efe3b40a3cd7ce80505251, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1908,6 +1958,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1805303869}
   m_CullTransparentMesh: 1
+--- !u!1 &1989541993 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4869733542303961435, guid: 0fd16e0cd5efe3b40a3cd7ce80505251, type: 3}
+  m_PrefabInstance: {fileID: 212560654}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2105176793
 GameObject:
   m_ObjectHideFlags: 0
@@ -2137,6 +2192,14 @@ PrefabInstance:
       propertyPath: foodText
       value: 
       objectReference: {fileID: 3897793001819041715}
+    - target: {fileID: 4483407879818052683, guid: c8f361e7cd4a66942b1e94ea7f8e04c3, type: 3}
+      propertyPath: firstFloor
+      value: 
+      objectReference: {fileID: 1390668550}
+    - target: {fileID: 8445285508058943002, guid: c8f361e7cd4a66942b1e94ea7f8e04c3, type: 3}
+      propertyPath: m_text
+      value: 'Levle: 0'
+      objectReference: {fileID: 0}
     - target: {fileID: 9138934440010193686, guid: c8f361e7cd4a66942b1e94ea7f8e04c3, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0

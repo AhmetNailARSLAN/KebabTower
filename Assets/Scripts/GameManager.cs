@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -9,9 +11,10 @@ public class GameManager : MonoBehaviour
     public List<GameObject> floors;
     public GameObject levelPrefab;
 
-    public float Money { get; private set; }
-    public float foodCost;
     public float powerMultiplier = 1.2f;
+    public float chefmakeAmountMultiplier = 10f;
+    public float movementMultiplier = 1.2f;
+    public float levelCostMultiplier = 3.2f;
     public float levelHeight = 10.0f;
 
     private Vector3 nextLevelPosition = Vector3.zero;
@@ -29,43 +32,45 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void AddMoney(float amount)
+    private void CreateNewLevel(Vector3 lastPosition)
     {
-        Money += amount;
-    }
+        lastPosition = new Vector3(lastPosition.x, lastPosition.y + levelHeight, lastPosition.z);
 
-    public void SellFood(float amount)
-    {
-        Money += amount * foodCost;
-    }
-
-    public void BuyUpgrade(float cost)
-    {
-        if (Money >= cost)
-        {
-            Money -= cost;
-        }
-    }
-
-    public void CreateNewLevel()
-    {
-        Vector3 lastFloorPos = floors[floors.Count - 1].transform.position;
-        nextLevelPosition = new Vector3(lastFloorPos.x, lastFloorPos.y + levelHeight, lastFloorPos.z);
-
-        GameObject newLevelObject = Instantiate(levelPrefab, nextLevelPosition, Quaternion.identity);
+        GameObject newLevelObject = Instantiate(levelPrefab, lastPosition, Quaternion.identity);
         floors.Add(newLevelObject);
-        elevator.NewStorage(newLevelObject);
         UpdateLevelFeatures(newLevelObject);
     }
 
     private void UpdateLevelFeatures(GameObject newLevelObject)
     {
-        powerMultiplier *= 1.2f;
+        powerMultiplier *= 2f;
+        movementMultiplier *= 1.2f;
+        chefmakeAmountMultiplier *= 2f;
+        levelCostMultiplier *= powerMultiplier;
         Level newLevel = newLevelObject.GetComponent<Level>();
-        newLevel.chef.cookingSpeed *= powerMultiplier;
-        newLevel.chef.makeAmount *= powerMultiplier;
-        newLevel.waiter.waitTime -= 0.5f;
+
+        // Çalýþan özelliklerii yükselt
+        newLevel.chef.makeAmount *= chefmakeAmountMultiplier;
+        newLevel.waiter.waitTime -= 0.2f;
         newLevel.waiter.carryCapacity *= powerMultiplier;
-        newLevel.waiter.moveSpeed *= powerMultiplier;
+        newLevel.waiter.moveSpeed *= movementMultiplier;
+
+        // Kat özelliklerini deðiþtir
+        newLevel.UnlockCost = Mathf.Round(newLevel.UnlockCost * levelCostMultiplier);
+        newLevel.isLocked = true;
+    }
+
+    public void UnlockLevel()
+    {
+        var lastFloor = floors[floors.Count - 1];
+        Level levelScript = lastFloor.GetComponent<Level>();
+
+        if (levelScript.UnlockCost < MoneyManager.instance.CurrentMoney)
+        {
+            CreateNewLevel(lastFloor.transform.position);
+            levelScript.isLocked = false;
+            MoneyManager.instance.RemoveMoney((int)levelScript.UnlockCost);
+            elevator.storageList.Add(levelScript.storage);
+        }
     }
 }
