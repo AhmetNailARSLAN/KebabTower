@@ -9,6 +9,8 @@ public class Chef : MonoBehaviour
     public float makeAmount;
     public float foodAmount;
 
+
+
     private void Start()
     {
         StartCoroutine(CookFood());

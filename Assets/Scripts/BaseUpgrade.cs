@@ -20,14 +20,24 @@ public class BaseUpgrade : MonoBehaviour
 
     public int CurrentLevel { get; set; }
     public float UpgradeCost { get; set; }
+    public float CapasityMultiplier => capasityMultiplier;
+    public float MoveSpeedMultiplier => moveSpeedMultiplier;
+    public float WaitTimeReducer => waitTimeReducer;
+    public float MakeAmountMultiplier => makeAmountMultiplier;
+    public float CookingSpeedMultiplier => cookingSpeedMultiplier;
+    public float UpgradeCostMultiplier => upgradeCostMultiplier;
+
+    public Elevator Elevator => elevator;
 
     protected Elevator elevator;
+    protected Waiter waiter;
     protected Chef chef;
 
     private void Start()
     {
         elevator = GetComponent<Elevator>();
         chef = GetComponent<Chef>();    
+        waiter = GetComponent<Waiter>();    
 
         CurrentLevel = 1;
         UpgradeCost = initialUpgradeCost;

@@ -47,7 +47,7 @@ public class GameManager : MonoBehaviour
         movementMultiplier *= 1.2f;
         chefmakeAmountMultiplier *= 2f;
         levelCostMultiplier *= powerMultiplier;
-        Level newLevel = newLevelObject.GetComponent<Level>();
+        Floor newLevel = newLevelObject.GetComponent<Floor>();
 
         // Çalýþan özelliklerii yükselt
         newLevel.chef.makeAmount *= chefmakeAmountMultiplier;
@@ -63,7 +63,7 @@ public class GameManager : MonoBehaviour
     public void UnlockLevel()
     {
         var lastFloor = floors[floors.Count - 1];
-        Level levelScript = lastFloor.GetComponent<Level>();
+        Floor levelScript = lastFloor.GetComponent<Floor>();
 
         if (levelScript.UnlockCost < MoneyManager.instance.CurrentMoney)
         {

@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class ElevatorUI : MonoBehaviour
 {
+    public static Action<ElevatorUpgrade> OnUpgradeRequest;
+
     public TextMeshProUGUI foodCountTMP;
     public TextMeshProUGUI currentLevelTMP;
 
@@ -33,6 +35,10 @@ public class ElevatorUI : MonoBehaviour
             currentLevelTMP.text = $"Level: {currentlevel}";
         }
 
+    }
+    public void RequestUpgrade()
+    {
+        OnUpgradeRequest.Invoke(elevatorUpgrade);
     }
 
     private void OnEnable()

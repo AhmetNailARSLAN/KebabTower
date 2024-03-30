@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -5,6 +6,8 @@ using UnityEngine;
 
 public class ChefUI : MonoBehaviour
 {
+    public static Action<Chef, ChefUpgrade> OnUpgradeRequest;
+
     public TextMeshProUGUI foodCountTMP;
     public TextMeshProUGUI currentLevelTMP;
 
@@ -23,6 +26,11 @@ public class ChefUI : MonoBehaviour
     void Update()
     {
         foodCountTMP.text = chef.foodAmount.ToString();
+    }
+
+    public void UpgradeRequest()
+    {
+        OnUpgradeRequest?.Invoke(chef,chefUpgrade);
     }
 
     public void UpgradeChef(BaseUpgrade upgrade, int currentlevel)

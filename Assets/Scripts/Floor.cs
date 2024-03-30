@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Analytics;
 
-public class Level : MonoBehaviour
+public class Floor : MonoBehaviour
 {
     public Chef chef;
     public Waiter waiter;
@@ -17,6 +17,8 @@ public class Level : MonoBehaviour
     public GameObject UnlockButton;
 
     public float UnlockCost = 1f;
+
+    public int FloorID { get; set; }
 
     // Start is called before the first frame update
     void Start()
