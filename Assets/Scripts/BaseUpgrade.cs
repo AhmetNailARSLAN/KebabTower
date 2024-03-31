@@ -18,6 +18,11 @@ public class BaseUpgrade : MonoBehaviour
     [SerializeField] private float initialUpgradeCost;
     [SerializeField] private float upgradeCostMultiplier;
 
+    protected Elevator elevator;
+    protected Waiter waiter;
+    protected Chef chef;
+    protected Courier courier;
+
     public int CurrentLevel { get; set; }
     public float UpgradeCost { get; set; }
     public float CapasityMultiplier => capasityMultiplier;
@@ -28,16 +33,17 @@ public class BaseUpgrade : MonoBehaviour
     public float UpgradeCostMultiplier => upgradeCostMultiplier;
 
     public Elevator Elevator => elevator;
+    public Courier Courier => courier;
+    public Chef Chef => chef;
 
-    protected Elevator elevator;
-    protected Waiter waiter;
-    protected Chef chef;
+
 
     private void Start()
     {
         elevator = GetComponent<Elevator>();
         chef = GetComponent<Chef>();    
         waiter = GetComponent<Waiter>();    
+        courier = GetComponent<Courier>();    
 
         CurrentLevel = 1;
         UpgradeCost = initialUpgradeCost;

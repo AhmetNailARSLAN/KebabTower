@@ -15,7 +15,15 @@ public class MoneyManager : MonoBehaviour
 
     private void Awake()
     {
-        instance = this;
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(instance.gameObject);
+            instance = this;
+        }
         PlayerPrefs.DeleteAll();
     }
 

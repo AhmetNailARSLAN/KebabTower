@@ -81,6 +81,10 @@ public class UpgradeManager : MonoBehaviour
             {
                 UpdateElevatorPanel(currentUpgrade);
             }
+            else if (currentUpgrade is CourierUpgrade)
+            {
+                UpdateCourierPanel(currentUpgrade);
+            }
         }
     }
 
@@ -96,28 +100,28 @@ public class UpgradeManager : MonoBehaviour
     {
         ActivateButton(0);
         TimesToUpgrade = 1;
-        upgradeCostText.text = $"{currentUpgrade.UpgradeCost}";
+        upgradeCostText.text = $"Cost\n{currentUpgrade.UpgradeCost}";
     }
 
     public void UpgradeX10()
     {
         ActivateButton(1);
         TimesToUpgrade = CanUpgradeManyTimes(10, currentUpgrade) ? 10 : 0;
-        upgradeCostText.text = GetUpgradeCost(10, currentUpgrade).ToString();
+        upgradeCostText.text = $"Cost\n{GetUpgradeCost(10, currentUpgrade)}";
     }
 
     public void UpgradeX50()
     {
         ActivateButton(2);
         TimesToUpgrade = CanUpgradeManyTimes(50, currentUpgrade) ? 50 : 0;
-        upgradeCostText.text = GetUpgradeCost(50, currentUpgrade).ToString();
+        upgradeCostText.text = $"Cost\n{GetUpgradeCost(50, currentUpgrade)}";
     }
 
     public void UpgradeMax()
     {
         ActivateButton(3);
         TimesToUpgrade = CalculateUpgradeCount(currentUpgrade);
-        upgradeCostText.text = GetUpgradeCost(TimesToUpgrade, currentUpgrade).ToString();
+        upgradeCostText.text = $"Cost\n{GetUpgradeCost(TimesToUpgrade, currentUpgrade)}"; 
     }
 
     #endregion
@@ -242,6 +246,58 @@ public class UpgradeManager : MonoBehaviour
     }
     #endregion
 
+    #region Update Courier Panel
+    public void UpdateCourierPanel(BaseUpgrade upgrade)
+    {
+        Courier courier = upgrade.Courier;
+        panelTitle.text = $"Courier Level: {upgrade.CurrentLevel}";
+
+        stats[2].SetActive(true);
+
+        upgradeCostText.text = $"Cost\n{upgrade.UpgradeCost}";
+
+        // Update Icons
+        panelIcon.sprite = elevatorIcon;
+        stat1icon.sprite = capasityIcon;
+        stat2icon.sprite = movementIcon;
+        stat3icon.sprite = waitSpeedIcon;
+
+        // Update stat Titles
+        stat1title.text = "Carry Capasity";
+        stat2title.text = "Movement Speed";
+        stat3title.text = "Loading Speed";
+
+        // Update current Stats
+        Debug.Log(courier.moveSpeed);
+        currentStat1.text = $"{courier.carryCapacity}";
+        currentStat2.text = $"{courier.moveSpeed}";
+        currentStat3.text = $"{courier.waitTime}";
+
+        // Update carry capasity Upgraded
+        int currentCapasity = (int)courier.carryCapacity;
+        int capasityMTP = (int)upgrade.CapasityMultiplier;
+        int capasityAdded = Math.Abs(currentCapasity - (currentCapasity * capasityMTP));
+        Debug.Log(capasityAdded);
+        statUpgraded1.text = $"{capasityAdded}";
+
+        // Update move speed Upgraded
+        float currentMSpeed = courier.moveSpeed;
+        float moveSpeedMTP = upgrade.MoveSpeedMultiplier;
+        float moveSpeedAdded = Math.Abs(currentMSpeed - (currentMSpeed * moveSpeedMTP));
+        if ((upgrade.CurrentLevel + 1) % 10 == 0)
+        {
+            statUpgraded2.text = $"+{moveSpeedAdded}/s";
+        }
+
+        // Update Load Time
+        float loadTimeAdded = upgrade.WaitTimeReducer;
+        if ((upgrade.CurrentLevel + 1) % 10 == 0)
+        {
+            statUpgraded3.text = $"{loadTimeAdded}";
+        }
+    }
+    #endregion
+
     #region Events
     private void ChefUpgradeRequest(Chef chef, ChefUpgrade chefUpgrade)
     {
@@ -259,17 +315,26 @@ public class UpgradeManager : MonoBehaviour
         currentUpgrade = elevatorUpgrade;
     }
 
+    private void CourierUpgradeRequest(CourierUpgrade upgrade)
+    {
+        OpenUpgradePanel(true);
+        UpdateCourierPanel(upgrade);
+        currentUpgrade = upgrade;
+    }
 
     private void OnEnable()
     {
         ChefUI.OnUpgradeRequest += ChefUpgradeRequest;
         ElevatorUI.OnUpgradeRequest += ElevatorUpgradeRequest;
+        CourierUI.OnUpgradeRequest += CourierUpgradeRequest;
+
     }
 
     private void OnDisable()
     {
         ChefUI.OnUpgradeRequest -= ChefUpgradeRequest;
         ElevatorUI.OnUpgradeRequest -= ElevatorUpgradeRequest;
+        CourierUI.OnUpgradeRequest -= CourierUpgradeRequest;
     }
     #endregion
 }

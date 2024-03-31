@@ -5,7 +5,11 @@ using UnityEngine;
 
 public class Courier : Worker
 {
+    [SerializeField] private GameObject prefab;
+
     public Cashier cashier;
+    [SerializeField] private List<Courier> couriers;
+    public List<Courier> Couriers => couriers;
 
     private Transform cashierTransform;
     private Transform startPosition;
@@ -64,4 +68,5 @@ public class Courier : Worker
         TeleportStartPos();
         isCarryingFood = false;
     }
+
 }
