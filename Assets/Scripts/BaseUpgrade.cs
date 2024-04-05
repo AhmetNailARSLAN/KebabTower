@@ -35,6 +35,7 @@ public class BaseUpgrade : MonoBehaviour
     public Elevator Elevator => elevator;
     public Courier Courier => courier;
     public Chef Chef => chef;
+    public Waiter Waiter => waiter;
 
 
 

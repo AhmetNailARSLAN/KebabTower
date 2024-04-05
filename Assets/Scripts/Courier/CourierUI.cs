@@ -28,17 +28,9 @@ public class CourierUI : MonoBehaviour
         //foodCountTMP.text = courier.foodAmount.ToString();
     }
 
-    public void UpgradeElevator(BaseUpgrade upgrade, int currentlevel)
-    {
-        if (upgrade == courierUpgrade)
-        {
-            currentLevelTMP.text = $"Level: {currentlevel}";
-        }
-
-    }
     public void RequestUpgrade()
     {
-        OnUpgradeRequest.Invoke(courierUpgrade);
+        OnUpgradeRequest?.Invoke(courierUpgrade);
     }
 
 }

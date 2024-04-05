@@ -420,13 +420,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 749eb143a73d1d146a482b6ea7e88b98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  capasityMultiplier: 4
+  capasityMultiplier: 2.2
   moveSpeedMultiplier: 2
   waitTimeReducer: 0.2
   makeAmountMultiplier: 0
   cookingSpeedMultiplier: 0
   initialUpgradeCost: 35
-  upgradeCostMultiplier: 2.2
+  upgradeCostMultiplier: 1.2
 --- !u!114 &1546781291716126717
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1715,10 +1715,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 4416340665026223807}
-        m_TargetAssemblyTypeName: BaseUpgrade, Assembly-CSharp
-        m_MethodName: Upgrade
-        m_Mode: 3
+      - m_Target: {fileID: 1546781291716126717}
+        m_TargetAssemblyTypeName: WaiterUI, Assembly-CSharp
+        m_MethodName: UpdateRequest
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine

@@ -85,6 +85,10 @@ public class UpgradeManager : MonoBehaviour
             {
                 UpdateCourierPanel(currentUpgrade);
             }
+            else if (currentUpgrade is WaiterUpgrade)
+            {
+                UpdateWaiterPanel(currentUpgrade);
+            }
         }
     }
 
@@ -128,7 +132,7 @@ public class UpgradeManager : MonoBehaviour
 
     #region Help Method
 
-    private int  GetUpgradeCost(int amount, BaseUpgrade upgrade)
+    private int GetUpgradeCost(int amount, BaseUpgrade upgrade)
     {
         int cost = 0;
         int upgradecost = (int) upgrade.UpgradeCost;
@@ -204,8 +208,8 @@ public class UpgradeManager : MonoBehaviour
 
         // Update carry capasity Upgraded
         int currentCapasity = (int)elevator.carryCapacity; 
-        int capasityMTP = (int)elevatorUpgrade.CapasityMultiplier; 
-        int capasityAdded = Math.Abs(currentCapasity - (currentCapasity * capasityMTP));
+        float capasityMTP = elevatorUpgrade.CapasityMultiplier; 
+        int capasityAdded = (int)Math.Abs(currentCapasity - (currentCapasity * capasityMTP));
         Debug.Log(capasityAdded);
         statUpgraded1.text = $"{capasityAdded}";
 
@@ -217,12 +221,20 @@ public class UpgradeManager : MonoBehaviour
         {
             statUpgraded2.text = $"+{moveSpeedAdded}/s";
         }
+        else
+        {
+            statUpgraded2.text = "0";
+        }
 
         // Update Load Time
         float loadTimeAdded = elevatorUpgrade.WaitTimeReducer;
         if ((elevatorUpgrade.CurrentLevel + 1) % 10 == 0)
         {
             statUpgraded3.text = $"{loadTimeAdded}";
+        }
+        else
+        {
+            statUpgraded3.text = "0";
         }
 
     }
@@ -288,12 +300,80 @@ public class UpgradeManager : MonoBehaviour
         {
             statUpgraded2.text = $"+{moveSpeedAdded}/s";
         }
+        else
+        {
+            statUpgraded2.text = "0";
+        }
 
         // Update Load Time
         float loadTimeAdded = upgrade.WaitTimeReducer;
         if ((upgrade.CurrentLevel + 1) % 10 == 0)
         {
             statUpgraded3.text = $"{loadTimeAdded}";
+        }
+        else
+        {
+            statUpgraded3.text = "0";
+        }
+    }
+    #endregion
+
+    #region Update Waiter Panel
+    public void UpdateWaiterPanel(BaseUpgrade upgrade)
+    {
+        Waiter waiter = upgrade.Waiter;
+        panelTitle.text = $"Waiter Level: {upgrade.CurrentLevel}";
+
+        stats[2].SetActive(true);
+
+        upgradeCostText.text = $"Cost\n{upgrade.UpgradeCost}";
+
+        // Update Icons
+        panelIcon.sprite = elevatorIcon;
+        stat1icon.sprite = capasityIcon;
+        stat2icon.sprite = movementIcon;
+        stat3icon.sprite = waitSpeedIcon;
+
+        // Update stat Titles
+        stat1title.text = "Carry Capasity";
+        stat2title.text = "Movement Speed";
+        stat3title.text = "Loading Speed";
+
+        // Update current Stats
+        Debug.Log(waiter.moveSpeed);
+        currentStat1.text = $"{waiter.carryCapacity}";
+        currentStat2.text = $"{waiter.moveSpeed}";
+        currentStat3.text = $"{waiter.waitTime}";
+
+        // Update carry capasity Upgraded
+        int currentCapasity = (int)waiter.carryCapacity;
+        int capasityMTP = (int)upgrade.CapasityMultiplier;
+        int capasityAdded = Math.Abs(currentCapasity - (currentCapasity * capasityMTP));
+        Debug.Log(capasityAdded);
+        statUpgraded1.text = $"{capasityAdded}";
+
+        // Update move speed Upgraded
+        float currentMSpeed = waiter.moveSpeed;
+        float moveSpeedMTP = upgrade.MoveSpeedMultiplier;
+        float moveSpeedAdded = Math.Abs(currentMSpeed - (currentMSpeed * moveSpeedMTP));
+        if ((upgrade.CurrentLevel + 1) % 10 == 0)
+        {
+            statUpgraded2.text = $"+{moveSpeedAdded}/s";
+        }
+        else
+        {
+            statUpgraded2.text = "0";
+        }
+
+        // Update Load Time
+        float loadTimeAdded = upgrade.WaitTimeReducer;
+        if ((upgrade.CurrentLevel + 1) % 10 == 0)
+        {
+            statUpgraded3.text = $"{loadTimeAdded}";
+        }
+        else
+        {
+            statUpgraded3.text = "0";
         }
     }
     #endregion
@@ -322,12 +402,19 @@ public class UpgradeManager : MonoBehaviour
         currentUpgrade = upgrade;
     }
 
+    private void WaiterUpgradeRequest(WaiterUpgrade upgrade)
+    {
+        OpenUpgradePanel(true);
+        UpdateWaiterPanel(upgrade);
+        currentUpgrade = upgrade;
+    }
+
     private void OnEnable()
     {
         ChefUI.OnUpgradeRequest += ChefUpgradeRequest;
         ElevatorUI.OnUpgradeRequest += ElevatorUpgradeRequest;
         CourierUI.OnUpgradeRequest += CourierUpgradeRequest;
-
+        WaiterUI.OnUpgradeRequest += WaiterUpgradeRequest;
     }
 
     private void OnDisable()
@@ -335,6 +422,7 @@ public class UpgradeManager : MonoBehaviour
         ChefUI.OnUpgradeRequest -= ChefUpgradeRequest;
         ElevatorUI.OnUpgradeRequest -= ElevatorUpgradeRequest;
         CourierUI.OnUpgradeRequest -= CourierUpgradeRequest;
+        WaiterUI.OnUpgradeRequest -= WaiterUpgradeRequest;
     }
     #endregion
 }

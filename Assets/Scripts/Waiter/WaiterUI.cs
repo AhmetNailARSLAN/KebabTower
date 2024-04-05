@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -5,6 +6,8 @@ using UnityEngine;
 
 public class WaiterUI : MonoBehaviour
 {
+    public static Action<WaiterUpgrade> OnUpgradeRequest;
+
     public TextMeshProUGUI currentLevelTMP;
 
     private WaiterUpgrade waiterUpgrade;
@@ -15,22 +18,9 @@ public class WaiterUI : MonoBehaviour
         waiterUpgrade = GetComponent<WaiterUpgrade>();
     }
 
-    public void UpgradeElevator(BaseUpgrade upgrade, int currentlevel)
+    public void UpdateRequest()
     {
-        if (upgrade == waiterUpgrade)
-        {
-            currentLevelTMP.text = $"Level: {currentlevel}";
-        }
-
+        OnUpgradeRequest?.Invoke(waiterUpgrade);
     }
 
-    private void OnEnable()
-    {
-        WaiterUpgrade.OnUpgrade += UpgradeElevator;
-    }
-
-    private void OnDisable()
-    {
-        WaiterUpgrade.OnUpgrade -= UpgradeElevator;
-    }
 }
