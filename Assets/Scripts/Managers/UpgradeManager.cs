@@ -111,7 +111,8 @@ public class UpgradeManager : MonoBehaviour
     {
         ActivateButton(1);
         TimesToUpgrade = CanUpgradeManyTimes(10, currentUpgrade) ? 10 : 0;
-        upgradeCostText.text = $"Cost\n{GetUpgradeCost(10, currentUpgrade)}";
+        int upgradeCost = GetUpgradeCost(TimesToUpgrade, currentUpgrade);
+        upgradeCostText.text = $"Cost\n{upgradeCost}";
     }
 
     public void UpgradeX50()
@@ -202,16 +203,15 @@ public class UpgradeManager : MonoBehaviour
 
         // Update current Stats
         Debug.Log(elevator.moveSpeed);
-        currentStat1.text = $"{elevator.carryCapacity}";
+        currentStat1.text = Currency.DisplayCurrency(elevator.carryCapacity);
         currentStat2.text = $"{elevator.moveSpeed}";
         currentStat3.text = $"{elevator.waitTime}";
 
         // Update carry capasity Upgraded
         int currentCapasity = (int)elevator.carryCapacity; 
         float capasityMTP = elevatorUpgrade.CapasityMultiplier; 
-        int capasityAdded = (int)Math.Abs(currentCapasity - (currentCapasity * capasityMTP));
-        Debug.Log(capasityAdded);
-        statUpgraded1.text = $"{capasityAdded}";
+        int capasityAdded = (int)Math.Abs((currentCapasity * capasityMTP) - currentCapasity);
+        statUpgraded1.text = Currency.DisplayCurrency(capasityAdded);
 
         // Update move speed Upgraded
         float currentMSpeed = elevator.moveSpeed;
@@ -219,7 +219,7 @@ public class UpgradeManager : MonoBehaviour
         float moveSpeedAdded = Math.Abs(currentMSpeed - (currentMSpeed * moveSpeedMTP));
         if ((elevatorUpgrade.CurrentLevel +1) % 10 == 0)
         {
-            statUpgraded2.text = $"+{moveSpeedAdded}/s";
+            statUpgraded2.text = Currency.DisplayCurrency(moveSpeedAdded);
         }
         else
         {
@@ -281,7 +281,7 @@ public class UpgradeManager : MonoBehaviour
 
         // Update current Stats
         Debug.Log(courier.moveSpeed);
-        currentStat1.text = $"{courier.carryCapacity}";
+        currentStat1.text = Currency.DisplayCurrency(courier.carryCapacity);
         currentStat2.text = $"{courier.moveSpeed}";
         currentStat3.text = $"{courier.waitTime}";
 
@@ -290,7 +290,7 @@ public class UpgradeManager : MonoBehaviour
         int capasityMTP = (int)upgrade.CapasityMultiplier;
         int capasityAdded = Math.Abs(currentCapasity - (currentCapasity * capasityMTP));
         Debug.Log(capasityAdded);
-        statUpgraded1.text = $"{capasityAdded}";
+        statUpgraded1.text = Currency.DisplayCurrency(capasityAdded);
 
         // Update move speed Upgraded
         float currentMSpeed = courier.moveSpeed;
@@ -326,7 +326,7 @@ public class UpgradeManager : MonoBehaviour
 
         stats[2].SetActive(true);
 
-        upgradeCostText.text = $"Cost\n{upgrade.UpgradeCost}";
+        upgradeCostText.text = $"Cost\n{Currency.DisplayCurrency(upgrade.UpgradeCost)}";
 
         // Update Icons
         panelIcon.sprite = elevatorIcon;
@@ -341,7 +341,7 @@ public class UpgradeManager : MonoBehaviour
 
         // Update current Stats
         Debug.Log(waiter.moveSpeed);
-        currentStat1.text = $"{waiter.carryCapacity}";
+        currentStat1.text = Currency.DisplayCurrency(waiter.carryCapacity);
         currentStat2.text = $"{waiter.moveSpeed}";
         currentStat3.text = $"{waiter.waitTime}";
 
