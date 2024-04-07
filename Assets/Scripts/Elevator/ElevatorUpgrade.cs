@@ -10,7 +10,7 @@ public class ElevatorUpgrade : BaseUpgrade
         {
             elevator.carryCapacity *= capasityMultiplier;
 
-            if (CurrentLevel % 10 == 0)
+            if (CurrentLevel % 5 == 0)
             {
                 // 10 levelde bir deðiþecek þeyler
                 elevator.moveSpeed *= moveSpeedMultiplier;

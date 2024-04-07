@@ -10,7 +10,7 @@ public class ChefUpgrade : BaseUpgrade
         {
             chef.makeAmount *= makeAmountMultiplier;
 
-            if (CurrentLevel % 10 == 0)
+            if (CurrentLevel % 5 == 0)
             {
                 // Þefin sayýsýný artýr
                 chef.cookingSpeed -= waitTimeReducer;

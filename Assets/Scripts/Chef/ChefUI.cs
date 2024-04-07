@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class ChefUI : MonoBehaviour
 {
-    public static Action<Chef, ChefUpgrade> OnUpgradeRequest;
+    public static Action<ChefUpgrade> OnUpgradeRequest;
 
     public TextMeshProUGUI foodCountTMP;
     public TextMeshProUGUI currentLevelTMP;
@@ -30,7 +30,7 @@ public class ChefUI : MonoBehaviour
 
     public void UpgradeRequest()
     {
-        OnUpgradeRequest?.Invoke(chef,chefUpgrade);
+        OnUpgradeRequest?.Invoke(chefUpgrade);
     }
 
     public void UpgradeChef(BaseUpgrade upgrade, int currentlevel)

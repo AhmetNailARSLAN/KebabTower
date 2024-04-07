@@ -15,9 +15,6 @@ public class UpgradeManager : MonoBehaviour
     [SerializeField] private Image panelIcon;
     
 
-    private Chef selectedChef;
-    private ChefUpgrade selectedChefUpgrade;
-
     [Header("Buttons")]
     [SerializeField] private GameObject[] upgradeCountButtons;
 
@@ -58,6 +55,7 @@ public class UpgradeManager : MonoBehaviour
     [SerializeField] private Sprite waitSpeedIcon;
 
     private BaseUpgrade currentUpgrade;
+    private Worker currentworker;
 
     public int TimesToUpgrade { get; set; }
 
@@ -97,51 +95,49 @@ public class UpgradeManager : MonoBehaviour
         upgradePanel.SetActive(status);
     }
 
-
     #region Upgrade Count Buttons
 
     public void UpgradeX1()
     {
         ActivateButton(0);
         TimesToUpgrade = 1;
-        upgradeCostText.text = $"Cost\n{currentUpgrade.UpgradeCost}";
+        UpdateUpgradeValues();
     }
 
     public void UpgradeX10()
     {
         ActivateButton(1);
         TimesToUpgrade = CanUpgradeManyTimes(10, currentUpgrade) ? 10 : 0;
-        int upgradeCost = GetUpgradeCost(TimesToUpgrade, currentUpgrade);
-        upgradeCostText.text = $"Cost\n{upgradeCost}";
+        UpdateUpgradeValues();
     }
 
     public void UpgradeX50()
     {
         ActivateButton(2);
         TimesToUpgrade = CanUpgradeManyTimes(50, currentUpgrade) ? 50 : 0;
-        upgradeCostText.text = $"Cost\n{GetUpgradeCost(50, currentUpgrade)}";
+        UpdateUpgradeValues();
     }
 
     public void UpgradeMax()
     {
         ActivateButton(3);
         TimesToUpgrade = CalculateUpgradeCount(currentUpgrade);
-        upgradeCostText.text = $"Cost\n{GetUpgradeCost(TimesToUpgrade, currentUpgrade)}"; 
+        UpdateUpgradeValues();
     }
 
     #endregion
 
     #region Help Method
 
-    private int GetUpgradeCost(int amount, BaseUpgrade upgrade)
+    private float GetUpgradeCost(int amount, BaseUpgrade upgrade)
     {
-        int cost = 0;
-        int upgradecost = (int) upgrade.UpgradeCost;
+        float cost = 0;
+        float upgradecost = upgrade.UpgradeCost;
 
         for (int i = 0; i < amount; i++)
         {
             cost += upgradecost;
-            upgradecost *= (int) upgrade.UpgradeCostMultiplier;
+            upgradecost *= upgrade.UpgradeCostMultiplier;
         }
         return cost;
     }
@@ -161,13 +157,48 @@ public class UpgradeManager : MonoBehaviour
         for (int i = 0; i < upgradeCountButtons.Length; i++)
         {
             upgradeCountButtons[i].GetComponent<Image>().color = buttonDisabledColor;
+            upgradeCountButtons[i].GetComponent<Button>().interactable = true;
         }
-
+        upgradeCountButtons[buttonIndex].GetComponent<Button>().interactable = false;
         upgradeCountButtons[buttonIndex].GetComponent<Image>().color = buttonEnabledColor;
         upgradeCountButtons[buttonIndex].transform.DOPunchPosition(transform.localPosition + new Vector3(0, -15f, 0), 0.5f, 10, 0.5f).Play();
 
     }
 
+    public void UpdateUpgradeValues()
+    {
+        // Her bir özellik için güncellenmiþ deðerleri hesapla
+        float updatedCapasity = CalculateUpdatedCapasity();
+        float updatedMoveSpeed = CalculateUpdatedMoveSpeed();
+        float updatedWaitTime = CalculateUpdatedWaitTime();
+
+        // Güncellenmiþ deðerleri UI'ya yansýt
+        if (currentworker is Chef)
+        {
+            //chefin deðerleri
+        }
+        else
+        {
+            statUpgraded1.text = Currency.DisplayCurrency(updatedCapasity);
+            if (currentUpgrade.CurrentLevel % 5 == 0)
+            {
+                statUpgraded2.text = updatedMoveSpeed.ToString();
+                statUpgraded3.text = updatedWaitTime.ToString();
+            }
+            else 
+            {
+                statUpgraded2.text = currentworker.moveSpeed.ToString();
+                statUpgraded3.text = currentworker.waitTime.ToString();
+            }
+
+        }
+
+        upgradeCostText.text = Currency.DisplayCurrency(GetUpgradeCost(TimesToUpgrade, currentUpgrade));
+    }
+
+    #endregion
+
+    #region Calculate Methods
     public int CalculateUpgradeCount(BaseUpgrade upgrade)
     {
         int count = 0;
@@ -176,9 +207,50 @@ public class UpgradeManager : MonoBehaviour
         for (int i = currentMoney; i >= 0; i -= upgradeCost)
         {
             count++;
-            upgradeCost *= (int) upgrade.UpgradeCostMultiplier;
+            upgradeCost *= (int)upgrade.UpgradeCostMultiplier;
         }
         return count;
+    }
+    private float CalculateUpdatedCapasity()
+    {
+        float currentCapasity = currentworker.carryCapacity;
+        float capasityMTP = currentUpgrade.CapasityMultiplier;
+        float updatedCapasity = currentCapasity;
+
+        for (int i = 0; i < TimesToUpgrade; i++)
+        {
+            updatedCapasity *= capasityMTP;
+        }
+
+        return updatedCapasity;
+    }
+    private int CalculateUpdatedMoveSpeed()
+    {
+        int currentSpeed = (int)currentworker.moveSpeed;
+        float moveSpeedMTP = currentUpgrade.MoveSpeedMultiplier;
+        int updatedMoveSpeed = currentSpeed;
+
+        for (int i = 0; i < TimesToUpgrade; i++)
+        {
+            if (currentUpgrade.CurrentLevel % 5 == 0)
+                updatedMoveSpeed += (int)Math.Abs((updatedMoveSpeed * moveSpeedMTP) - updatedMoveSpeed);
+        }
+
+        return updatedMoveSpeed;
+    }
+    private float CalculateUpdatedWaitTime()
+    {
+        int currentWaitTime = (int)currentworker.waitTime;
+        float waitTimeReducer = currentUpgrade.WaitTimeReducer;
+        float updatedWaitTime = currentWaitTime;
+
+        for (int i = 0; i < TimesToUpgrade; i++)
+        {
+            if (currentUpgrade.CurrentLevel % 5 == 0)
+                updatedWaitTime -= waitTimeReducer;
+        }
+
+        return updatedWaitTime;
     }
     #endregion
 
@@ -207,35 +279,8 @@ public class UpgradeManager : MonoBehaviour
         currentStat2.text = $"{elevator.moveSpeed}";
         currentStat3.text = $"{elevator.waitTime}";
 
-        // Update carry capasity Upgraded
-        int currentCapasity = (int)elevator.carryCapacity; 
-        float capasityMTP = elevatorUpgrade.CapasityMultiplier; 
-        int capasityAdded = (int)Math.Abs((currentCapasity * capasityMTP) - currentCapasity);
-        statUpgraded1.text = Currency.DisplayCurrency(capasityAdded);
-
-        // Update move speed Upgraded
-        float currentMSpeed = elevator.moveSpeed;
-        float moveSpeedMTP = elevatorUpgrade.MoveSpeedMultiplier;
-        float moveSpeedAdded = Math.Abs(currentMSpeed - (currentMSpeed * moveSpeedMTP));
-        if ((elevatorUpgrade.CurrentLevel +1) % 10 == 0)
-        {
-            statUpgraded2.text = Currency.DisplayCurrency(moveSpeedAdded);
-        }
-        else
-        {
-            statUpgraded2.text = "0";
-        }
-
-        // Update Load Time
-        float loadTimeAdded = elevatorUpgrade.WaitTimeReducer;
-        if ((elevatorUpgrade.CurrentLevel + 1) % 10 == 0)
-        {
-            statUpgraded3.text = $"{loadTimeAdded}";
-        }
-        else
-        {
-            statUpgraded3.text = "0";
-        }
+        // Update Upgraded Stats
+        UpdateUpgradeValues();
 
     }
     #endregion
@@ -379,34 +424,38 @@ public class UpgradeManager : MonoBehaviour
     #endregion
 
     #region Events
-    private void ChefUpgradeRequest(Chef chef, ChefUpgrade chefUpgrade)
+    private void ChefUpgradeRequest(ChefUpgrade upgrade)
     {
         List<Floor> floorList = FloorManager.instance.Floors;
         for (int i = 0; i < floorList.Count; i++)
         {
         }
-        currentUpgrade = chefUpgrade;
+        currentUpgrade = upgrade;
+        //currentworker = upgrade.Chef;
     }
 
     private void ElevatorUpgradeRequest(ElevatorUpgrade elevatorUpgrade)
     {
+        currentworker = elevatorUpgrade.Elevator;
+        currentUpgrade = elevatorUpgrade;
         OpenUpgradePanel(true);
         UpdateElevatorPanel(elevatorUpgrade);
-        currentUpgrade = elevatorUpgrade;
     }
 
     private void CourierUpgradeRequest(CourierUpgrade upgrade)
     {
+        currentUpgrade = upgrade;
+        currentworker = upgrade.Courier;
         OpenUpgradePanel(true);
         UpdateCourierPanel(upgrade);
-        currentUpgrade = upgrade;
     }
 
     private void WaiterUpgradeRequest(WaiterUpgrade upgrade)
     {
+        currentUpgrade = upgrade;
+        currentworker = upgrade.Waiter;
         OpenUpgradePanel(true);
         UpdateWaiterPanel(upgrade);
-        currentUpgrade = upgrade;
     }
 
     private void OnEnable()

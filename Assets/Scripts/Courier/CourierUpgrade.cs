@@ -9,7 +9,7 @@ public class CourierUpgrade : BaseUpgrade
         if (courier != null)
         {
             courier.carryCapacity *= capasityMultiplier;
-            if (CurrentLevel % 10 == 0)
+            if (CurrentLevel % 5 == 0)
             {
                 courier.moveSpeed *= moveSpeedMultiplier;
                 courier.waitTime -= waitTimeReducer;
